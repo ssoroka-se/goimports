@@ -25,17 +25,18 @@ var (
 	list   = flag.Bool("l", false, "list files whose formatting differs from goimport's")
 	write  = flag.Bool("w", false, "write result to (source) file instead of stdout")
 	doDiff = flag.Bool("d", false, "display diffs instead of rewriting files")
+	tabWidth = flag.Int("tab_width", 8, "tab spacing")
+	tabIndent = flag.Bool("tab_indent", true, "tab indentation")
+	comments = flag.Bool("comments", true, "comments")
+	fragment = flag.Bool("fragment", true, "fragment")
 
-	options = &imports.Options{
-		TabWidth:  8,
-		TabIndent: true,
-		Comments:  true,
-		Fragment:  true,
-	}
+	options *imports.Options
 	exitCode = 0
 )
 
 func init() {
+	flag.Usage = usage
+	flag.Parse()
 	flag.BoolVar(&options.AllErrors, "e", false, "report all errors (not just the first 10 on different lines)")
 }
 
@@ -136,8 +137,12 @@ func main() {
 }
 
 func gofmtMain() {
-	flag.Usage = usage
-	flag.Parse()
+	options = &imports.Options{
+		TabWidth:  *tabWidth,
+		TabIndent: *tabIndent,
+		Comments:  *comments,
+		Fragment:  *fragment,
+	}
 
 	if options.TabWidth < 0 {
 		fmt.Fprintf(os.Stderr, "negative tabwidth %d\n", options.TabWidth)
