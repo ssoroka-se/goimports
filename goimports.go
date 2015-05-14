@@ -37,6 +37,13 @@ var (
 func init() {
 	flag.Usage = usage
 	flag.Parse()
+	options = &imports.Options{
+		TabWidth:  *tabWidth,
+		TabIndent: *tabIndent,
+		Comments:  *comments,
+		Fragment:  *fragment,
+	}
+
 	flag.BoolVar(&options.AllErrors, "e", false, "report all errors (not just the first 10 on different lines)")
 }
 
@@ -137,13 +144,6 @@ func main() {
 }
 
 func gofmtMain() {
-	options = &imports.Options{
-		TabWidth:  *tabWidth,
-		TabIndent: *tabIndent,
-		Comments:  *comments,
-		Fragment:  *fragment,
-	}
-
 	if options.TabWidth < 0 {
 		fmt.Fprintf(os.Stderr, "negative tabwidth %d\n", options.TabWidth)
 		exitCode = 2
