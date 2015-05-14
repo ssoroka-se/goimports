@@ -22,15 +22,15 @@ import (
 
 var (
 	// main operation modes
-	list   = flag.Bool("l", false, "list files whose formatting differs from goimport's")
-	write  = flag.Bool("w", false, "write result to (source) file instead of stdout")
-	doDiff = flag.Bool("d", false, "display diffs instead of rewriting files")
-	tabWidth = flag.Int("tab_width", 8, "tab spacing")
+	list      = flag.Bool("l", false, "list files whose formatting differs from goimport's")
+	write     = flag.Bool("w", false, "write result to (source) file instead of stdout")
+	doDiff    = flag.Bool("d", false, "display diffs instead of rewriting files")
+	tabWidth  = flag.Int("tab_width", 8, "tab spacing")
 	tabIndent = flag.Bool("tab_indent", true, "tab indentation")
-	comments = flag.Bool("comments", true, "comments")
-	fragment = flag.Bool("fragment", true, "fragment")
+	comments  = flag.Bool("comments", true, "comments")
+	fragment  = flag.Bool("fragment", true, "fragment")
 
-	options *imports.Options
+	options  *imports.Options
 	exitCode = 0
 )
 
@@ -67,9 +67,7 @@ func isGoFile(f os.FileInfo) bool {
 func processFile(filename string, in io.Reader, out io.Writer, stdin bool) error {
 	opt := options
 	if stdin {
-		nopt := *options
-		nopt.Fragment = true
-		opt = &nopt
+		(*opt).Fragment = true
 	}
 
 	if in == nil {
@@ -87,6 +85,8 @@ func processFile(filename string, in io.Reader, out io.Writer, stdin bool) error
 	}
 
 	res, err := imports.Process(filename, src, opt)
+	res = []byte(strings.Replace(string(res), "\t", "  ", -1))
+
 	if err != nil {
 		return err
 	}
